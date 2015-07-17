@@ -44,11 +44,11 @@
 	
     .PARAMETER TargetXML
     The name of the XML export file representing the Target DHCP.
-	Following the exmple in the descrption, this will be the XML export from DHCP1.
+	Following the example in the description, this will be the XML export from DHCP1.
 	
     .PARAMETER SourceXML
     The name of the XML export file representing the Source DHCP.
-	Following the exmple in the descrption, this will be the XML export from DHCP2.
+	Following the example in the description, this will be the XML export from DHCP2.
 	
     .EXAMPLE
     Merge-DHCP-Exports -TargetXML C:\DHCP-Exports\DHCP1.XML -SourceXML C:\DHCP-Exports\DHCP2.XML -Verbose
