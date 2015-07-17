@@ -1,2 +1,2 @@
 # ilantz-scripts
-My scripts repo for my public PowerShell scripts.
+A repo for my public PowerShell scripts.
