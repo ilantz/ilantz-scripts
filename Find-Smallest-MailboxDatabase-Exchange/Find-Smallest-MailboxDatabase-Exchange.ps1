@@ -1,3 +1,4 @@
+# Works with Exchange 2010 and above..
 # Use this example to exclude or include specific databases from the suggestion:   $dbs = Get-MailboxDatabase -Status | ? {$_.Name -ne "DB01" -AND $_.Name -ne "DB02" -AND $_.Name -like "DB*"} | select Name, DatabaseSize, AvailableNewMailboxSpace
 $dbs = Get-MailboxDatabase -Status | select Name, DatabaseSize, AvailableNewMailboxSpace
 
