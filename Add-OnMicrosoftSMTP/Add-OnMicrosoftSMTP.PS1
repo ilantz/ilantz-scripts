@@ -1,4 +1,5 @@
-﻿<#
+<#
+
 	.SYNOPSIS
     Add-OnMicrosoftSMTP
    
@@ -72,8 +73,10 @@ process {
 	{
 
 	    $users = $null
-	    # Find mailbox users without email address policy enabled and a routing email address
-	    $users = get-mailbox -Filter {EmailAddressPolicyEnabled -ne $true -And EmailAddresses -notlike "*@newaytech.mail.onmicrosoft.com"}
+	    $filter = $null
+        $filter = ("*@" + $Tenant + ".mail.onmicrosoft.com")
+        # Find mailbox users without email address policy enabled and a routing email address
+	    $users = get-mailbox -Filter {EmailAddressPolicyEnabled -ne $true -And EmailAddresses -notlike $filter}
 
         writelog ("Will try to add routing SMTP addresses to " + $users.count + " mailboxes.")
 
@@ -81,13 +84,13 @@ process {
 	    {
 	        write-host -ForegroundColor White "`nMailbox" $user.DisplayName "Is not configured with a routing smtp address, trying to add one..."
 	        # Check that the assumed routing smtp address value isn't already configured for a recipient
-	        if (Get-Recipient ($user.PrimarySmtpAddress.Split("@")[0] + "@" + $Tenant + ".mail.onmicrosoft.com") -ErrorAction silentlycontinue) 
+	        if (Get-Recipient ($user.PrimarySmtpAddress.ToString().Split("@")[0] + "@" + $Tenant + ".mail.onmicrosoft.com") -ErrorAction silentlycontinue) 
 	        {
-    	        write-host -ForegroundColor Yellow ($user.PrimarySmtpAddress.Split("@")[0] + "@" + $Tenant + ".mail.onmicrosoft.com") "Is conflicting with a different recipient..."
+    	        write-host -ForegroundColor Yellow ($user.PrimarySmtpAddress.ToString().Split("@")[0] + "@" + $Tenant + ".mail.onmicrosoft.com") "Is conflicting with a different recipient..."
 
 		        # Create a random suffix for the routing smtp address and add it to the mailbox
 		        $Error.Clear()
-                set-mailbox -ErrorAction:Stop -Identity $user.identity -EmailAddresses @{Add=($user.PrimarySmtpAddress.Split("@")[0] + (Get-Random -Minimum 11111 -Maximum 99999) + "@" + $Tenant + ".mail.onmicrosoft.com")}
+                set-mailbox -ErrorAction:Stop -Identity $user.identity -EmailAddresses @{Add=($user.PrimarySmtpAddress.ToString().Split("@")[0] + (Get-Random -Minimum 11111 -Maximum 99999) + "@" + $Tenant + ".mail.onmicrosoft.com")}
 		        if ($Error)
                 {
                     writelog ("Failed to add the smtp routing address for " + $user.DistinguishedName)
@@ -95,7 +98,7 @@ process {
                 }
                 Else
                 {
-                    writelog ("Added " + ($user.PrimarySmtpAddress.Split("@")[0] + (Get-Random -Minimum 11111 -Maximum 99999) + "@" + $Tenant + ".mail.onmicrosoft.com") + " to " + $user.displayname)
+                    writelog ("Added " + ($user.PrimarySmtpAddress.ToString().Split("@")[0] + (Get-Random -Minimum 11111 -Maximum 99999) + "@" + $Tenant + ".mail.onmicrosoft.com") + " to " + $user.displayname)
                 }
 		        
             }
@@ -103,7 +106,7 @@ process {
             {
 				# Create a routing smtp address and add it to the mailbox    
 				$Error.Clear()
-                set-mailbox -ErrorAction:Stop -Identity $user.identity -EmailAddresses @{Add=($user.PrimarySmtpAddress.Split("@")[0] + "@" + $Tenant + ".mail.onmicrosoft.com")}
+                set-mailbox -ErrorAction:Stop -Identity $user.identity -EmailAddresses @{Add=($user.PrimarySmtpAddress.ToString().Split("@")[0] + "@" + $Tenant + ".mail.onmicrosoft.com")}
                 if ($Error)
                 {
                     writelog ("Failed to add the smtp routing address for " + $user.DistinguishedName)
@@ -111,7 +114,7 @@ process {
                 }				
                 Else
                 {
-                    writelog ("Added " + ($user.PrimarySmtpAddress.Split("@")[0] + "@" + $Tenant + ".mail.onmicrosoft.com") + " to " + $user.DisplayName)
+                    writelog ("Added " + ($user.PrimarySmtpAddress.ToString().Split("@")[0] + "@" + $Tenant + ".mail.onmicrosoft.com") + " to " + $user.DisplayName)
 				}
 				
             }
@@ -147,4 +150,4 @@ process {
 			    Exit -1
 			    }
         }
-} 
+}
