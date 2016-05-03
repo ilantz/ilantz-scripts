@@ -162,7 +162,7 @@ process {
 
     ## Main Script Block
 	$title = "Confirmation"
-    $message = ("You entered " + $ServiceAccount + " as you service account name" + "`nThis will result in adding the permissions to the account:" + "`n" + $env:USERDOMAIN + "\" + $ServiceAccount)
+    $message = ("You've entered " + $ServiceAccount + " as you service account name" + "`nThis will result in adding the permissions to the account:" + "`n" + $env:USERDOMAIN + "\" + $ServiceAccount)
 
     $yes = New-Object System.Management.Automation.Host.ChoiceDescription "&Yes", `
         "Continue with the script. The account name is correct."

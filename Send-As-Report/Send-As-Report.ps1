@@ -14,11 +14,12 @@
 	
 .NOTES
     File Name: Send-As-Report.ps1
-	Version: 0.2
+	Version: 0.3
 	Version History:
 		* 0.1 - initial release
 		* 0.2 - fixed an exception with calculating the progress while reporting $delegatelist 
-	Last Update: 01/Jul/2014
+		* 0.3 - now filtering S-1-* to exclude any non-existing ACL entries 
+	Last Update: 28/Feb/2016
 	Author   : Ilan Lanz, http://ilantz.com
     The script is provided “AS IS” with no guarantees, no warranties, USE ON YOUR OWN RISK.    
 #>
@@ -35,7 +36,7 @@ foreach ($recipient in $recipients)
 {
 
 $delegatelist = $null
-$delegatelist = Get-ADPermission $recipient.identity | ? {$_.isinherited -ne $true -and $_.ExtendedRights -like "Send-as" -and $_.User -notlike "NT AUTHORITY\SELF"}
+$delegatelist = Get-ADPermission $recipient.identity | ? {$_.isinherited -ne $true -and $_.ExtendedRights -like "Send-as" -and $_.User -notlike "NT AUTHORITY\SELF" -and $_.User -notlike "S-1-*"}
 
 	if ($delegatelist) 
 	{
