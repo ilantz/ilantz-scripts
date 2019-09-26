@@ -44,17 +44,22 @@ $apiUrl = 'https://graph.microsoft.com/beta/users'
 $users = Invoke-RestMethod -Headers @{Authorization = "Bearer $($Tokenresponse.access_token)"} -Uri $apiUrl -Method Get
 
 foreach ($user in $users.value) {
+
 $userid = $user.id
 
-## Install the app for each user
+    ## Check if the application is already instaled, and if not install it for the user
 
-$apiUrl = "https://graph.microsoft.com/beta/users/$userid/teamwork/installedApps"
-$body = '{"teamsApp@odata.bind":"https://graph.microsoft.com/beta/appCatalogs/teamsApps/'+$teamsApplicationid+'"}'
-Invoke-RestMethod -Headers @{Authorization = "Bearer $($Tokenresponse.access_token)"} -Uri $apiUrl -Method POST -ContentType 'Application/Json' -Body $body
-## Workaround to create a conversation ID
+    $apiUrl = "https://graph.microsoft.com/beta/users/$userid/teamwork/installedApps?`$expand=teamsAppDefinition&`$filter=teamsAppDefinition/teamsAppId eq '$teamsApplicationid'"
+    $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($Tokenresponse.access_token)"} -Uri $apiUrl -Method Get
+    
+    if (!$data.value) {
+    
+	    $apiUrl = "https://graph.microsoft.com/beta/users/$userid/teamwork/installedApps"
+	    $body = '{"teamsApp@odata.bind":"https://graph.microsoft.com/beta/appCatalogs/teamsApps/'+$teamsApplicationid+'"}'
+	    Invoke-RestMethod -Headers @{Authorization = "Bearer $($Tokenresponse.access_token)"} -Uri $apiUrl -Method POST -ContentType 'Application/Json' -Body $body
+	    ## Workaround to create a conversation ID
 
-$apiUrl = "https://graph.microsoft.com/beta/users/$userid/chats?`$filter=installedApps/any(x:x/teamsApp/id eq '$teamsApplicationid')"
-Invoke-RestMethod -Headers @{Authorization = "Bearer $($Tokenresponse.access_token)"} -Uri $apiUrl -Method Get
+	    $apiUrl = "https://graph.microsoft.com/beta/users/$userid/chats?`$filter=installedApps/any(x:x/teamsApp/id eq '$teamsApplicationid')"
+	    Invoke-RestMethod -Headers @{Authorization = "Bearer $($Tokenresponse.access_token)"} -Uri $apiUrl -Method Get
+    }
 }
-
-
